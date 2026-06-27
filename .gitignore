@@ -5,3 +5,4 @@ __pycache__/
 .redis/
 .idea/
 .vscode/
+.DS_Store
