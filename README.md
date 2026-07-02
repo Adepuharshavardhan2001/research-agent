@@ -36,16 +36,27 @@ An AI-powered research system that automatically searches the web, analyzes cont
 ##  Project Structure
 
 research-agent/
+
 ├── app/
+
 │ ├── main.py # FastAPI routes
+
 │ ├── agent.py # Research agent workflow
+
 │ ├── tasks.py # Celery tasks
+
 │ ├── celery_worker.py # Celery configuration
+
 │ ├── tools.py # Web search + article reader
+
 │ ├── report.py # Groq LLM report generator
+
 │ └── memory.py # Redis memory storage
+
 ├── Dockerfile
+
 ├── docker-compose.yml
+
 ├── requirements.txt
 
 ## 🚀 Quick Start
