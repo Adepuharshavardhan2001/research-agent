@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "topic": "retrieval augmented generation evaluation methods",
+    "category": "AI/ML",
+    "expected_keywords": ["recall", "precision", "faithfulness", "relevance"]
+  },
+  {
+    "id": 2,
+    "topic": "vector database comparison for RAG systems",
+    "category": "AI/ML",
+    "expected_keywords": ["chroma", "pinecone", "weaviate", "embedding"]
+  },
+  {
+    "id": 3,
+    "topic": "transformer architecture attention mechanism",
+    "category": "AI/ML",
+    "expected_keywords": ["attention", "encoder", "decoder", "transformer"]
+  },
+  {
+    "id": 4,
+    "topic": "prompt engineering techniques for large language models",
+    "category": "AI/ML",
+    "expected_keywords": ["prompt", "few-shot", "instruction", "chain-of-thought"]
+  },
+  {
+    "id": 5,
+    "topic": "ethical concerns in AI deployment",
+    "category": "AI Ethics",
+    "expected_keywords": ["bias", "fairness", "privacy", "transparency"]
+  },
+  {
+    "id": 6,
+    "topic": "federated learning overview and applications",
+    "category": "AI/ML",
+    "expected_keywords": ["federated", "privacy", "distributed", "client"]
+  },
+  {
+    "id": 7,
+    "topic": "knowledge graphs for enterprise search",
+    "category": "Data",
+    "expected_keywords": ["graph", "entity", "relationship", "ontology"]
+  },
+  {
+    "id": 8,
+    "topic": "MLOps best practices for production ML",
+    "category": "MLOps",
+    "expected_keywords": ["deployment", "monitoring", "versioning", "pipeline"]
+  },
+  {
+    "id": 9,
+    "topic": "small language models vs large language models tradeoffs",
+    "category": "AI/ML",
+    "expected_keywords": ["parameter", "latency", "cost", "accuracy"]
+  },
+  {
+    "id": 10,
+    "topic": "quantization techniques for efficient LLM inference",
+    "category": "AI/ML",
+    "expected_keywords": ["quantization", "precision", "int8", "memory"]
+  }
+]
