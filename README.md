@@ -1,121 +1,66 @@
-# Autonomous AI Research Agent
-
+Autonomous AI Research Agent
 An agentic research system where an LLM decides what to search, what to read, and when to stop — then produces a cited research report. Built with FastAPI, Celery, Redis, Groq, and Tavily.
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)
-![Celery](https://img.shields.io/badge/Celery-5.4-green)
-![Redis](https://img.shields.io/badge/Redis-7-red)
-![Tests](https://img.shields.io/badge/tests-31%20passing-brightgreen)
-![Eval](https://img.shields.io/badge/eval-100%25%20success-brightgreen)
+Python FastAPI Celery Redis Tests Eval
 
----
+The Problem
+Researching a new topic manually takes 1–2 hours: open 10+ tabs, read articles, take notes, write a summary. Existing tools fail you:
 
-## The Problem
+Google gives you links, not answers.
+ChatGPT gives answers, but hallucinates and doesn't cite sources.
+Perplexity Pro starts at $20/month.
+OpenAI Deep Research costs $200/month.
+This project solves that. Give it a topic; it autonomously researches and returns a cited report for ~$0.0015 per run — a fraction of the cost of alternatives.
 
-Researching a new topic manually takes **1–2 hours**: open 10+ tabs, read articles, take notes, write a summary. Existing tools fail you:
-
-- **Google** gives you links, not answers.
-- **ChatGPT** gives answers, but hallucinates and doesn't cite sources.
-- **Perplexity Pro** starts at $20/month.
-- **OpenAI Deep Research** costs $200/month.
-
-**This project solves that.** Give it a topic; it autonomously researches and returns a cited report for **~$0.0015 per run** — a fraction of the cost of alternatives.
-
----
-
-## How It Works
-
-Unlike a fixed pipeline, this is a true **agentic loop**: at every step, an LLM decides the next action.
-User submits topic
-│
-▼
-FastAPI (/research) ────► Celery task queue (Redis)
-│
-▼
-┌─────────────────────┐
-│ Agent Loop │
-│ │
-│ 1. LLM decides: │
-│ search / read │
-│ / finish │
-│ 2. Execute tool │
-│ 3. Append findings │
-│ 4. Repeat until │
-│ finish or │
-│ max_steps │
-└─────────────────────┘
-│
-▼
-Citation-grounded report
-│
-▼
-Saved to Redis (24h TTL)
-│
-▼
-GET /status/{task_id}
+How It Works
+Unlike a fixed pipeline, this is a true agentic loop: at every step, an LLM decides the next action. User submits topic │ ▼ FastAPI (/research) ────► Celery task queue (Redis) │ ▼ ┌─────────────────────┐ │ Agent Loop │ │ │ │ 1. LLM decides: │ │ search / read │ │ / finish │ │ 2. Execute tool │ │ 3. Append findings │ │ 4. Repeat until │ │ finish or │ │ max_steps │ └─────────────────────┘ │ ▼ Citation-grounded report │ ▼ Saved to Redis (24h TTL) │ ▼ GET /status/{task_id}
 
 text
 
-**The LLM decides every step** using Groq's function-calling API with three tools: `search_web`, `read_article`, and `finish`.
+The LLM decides every step using Groq's function-calling API with three tools: search_web, read_article, and finish.
 
----
+Features
+Agentic Core
+LLM-driven loop — the model picks its next action (search / read / finish)
+Self-termination — the LLM calls finish with reasoning when it has enough
+Adaptive behavior — if a source fails, the LLM picks another
+Max-step guardrail — bounded execution, no infinite loops
+Deduplication — the same URL or query is never processed twice
+Fallback pipeline — if the LLM fails, a linear pipeline runs instead
+Production Reliability
+Retries with exponential backoff — via tenacity, on network failures
+Timeouts on every HTTP call — no hung processes
+Structured logging — every decision logged via structlog
+Idempotency — the same topic returns the cached report (24h TTL)
+Task crash recovery — Celery acks_late + reject_on_worker_lost
+Contracts & Validation
+Pydantic tool contracts — every tool has typed inputs and outputs
+Validated API requests — ResearchRequest, TaskStatusResponse
+Structured errors — tools return success: bool + error: str, never crash
+Report Quality
+Citation grounding — every claim includes (source: <url>)
+Refusal path — the LLM says "insufficient data" instead of hallucinating
+Truncation control — bounded context sent to the LLM
+Evaluation Results
+Run on 10 topics spanning AI/ML, data, MLOps, and ethics:
 
-## Features
+Metric	Result
+Success rate	100% (10/10 topics)
+Avg latency	59.3 seconds
+Avg cost per report	$0.00153
+Avg keyword coverage	90%
+Avg citations per report	21.2
+Avg report length	6,189 chars
+Comparison:
 
-### Agentic Core
-- **LLM-driven loop** — the model picks its next action (search / read / finish)
-- **Self-termination** — the LLM calls `finish` with reasoning when it has enough
-- **Adaptive behavior** — if a source fails, the LLM picks another
-- **Max-step guardrail** — bounded execution, no infinite loops
-- **Deduplication** — the same URL or query is never processed twice
-- **Fallback pipeline** — if the LLM fails, a linear pipeline runs instead
-
-### Production Reliability
-- **Retries with exponential backoff** — via `tenacity`, on network failures
-- **Timeouts on every HTTP call** — no hung processes
-- **Structured logging** — every decision logged via `structlog`
-- **Idempotency** — the same topic returns the cached report (24h TTL)
-- **Task crash recovery** — Celery `acks_late` + `reject_on_worker_lost`
-
-### Contracts & Validation
-- **Pydantic tool contracts** — every tool has typed inputs and outputs
-- **Validated API requests** — `ResearchRequest`, `TaskStatusResponse`
-- **Structured errors** — tools return `success: bool` + `error: str`, never crash
-
-### Report Quality
-- **Citation grounding** — every claim includes `(source: <url>)`
-- **Refusal path** — the LLM says "insufficient data" instead of hallucinating
-- **Truncation control** — bounded context sent to the LLM
-
----
-
-## Evaluation Results
-
-Run on **10 topics** spanning AI/ML, data, MLOps, and ethics:
-
-| Metric | Result |
-|---|---|
-| **Success rate** | **100%** (10/10 topics) |
-| **Avg latency** | 59.3 seconds |
-| **Avg cost per report** | **$0.00153** |
-| **Avg keyword coverage** | 90% |
-| **Avg citations per report** | 21.2 |
-| **Avg report length** | 6,189 chars |
-
-**Comparison:**
-
-| Tool | Cost per report |
-|---|---|
-| **This project** | **$0.0015** |
-| Perplexity Pro | ~$0.20 |
-| OpenAI Deep Research | ~$2.00+ |
-
-**Failure handling in practice:** During the eval, 20 URLs were read. Two failed (one 403 from CDC.gov, one 404 from a stale link). The tool returned `success=False` (no crash), the LLM saw the failure and picked an alternative source. **All 10 topics still completed successfully.**
+Tool	Cost per report
+This project	$0.0015
+Perplexity Pro	~$0.20
+OpenAI Deep Research	~$2.00+
+Failure handling in practice: During the eval, 20 URLs were read. Two failed (one 403 from CDC.gov, one 404 from a stale link). The tool returned success=False (no crash), the LLM saw the failure and picked an alternative source. All 10 topics still completed successfully.
 
 Run the eval yourself:
 
-```bash
 python eval/run_eval.py
 Tech Stack
 Layer	Technology
