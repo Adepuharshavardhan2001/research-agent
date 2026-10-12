@@ -116,37 +116,6 @@ Testing	pytest (31 tests)
 Deployment	AWS EC2, systemd, nginx
 Containerization	Docker, Docker Compose
 
-Project Structure
-
-research-agent/
-├── app/
-│   ├── __init__.py
-│   ├── config.py            # Central settings
-│   ├── schemas.py           # Pydantic contracts
-│   ├── tools.py             # search_web, read_article + tool specs
-│   ├── agent.py             # The LLM-driven agent loop
-│   ├── report.py            # Citation-grounded report generation
-│   ├── memory.py            # Redis-backed memory (24h TTL)
-│   ├── tasks.py             # Celery task with retries + idempotency
-│   ├── celery_worker.py     # Celery configuration
-│   └── main.py              # FastAPI endpoints
-├── tests/                   # 31 unit + integration tests
-│   ├── test_tools.py
-│   ├── test_memory.py
-│   └── test_agent.py
-├── eval/
-│   ├── test_topics.json     # 10 eval topics
-│   └── run_eval.py          # Eval harness
-├── scripts/
-│   └── run_agent.py         # Local dev runner
-├── docs/
-│   ├── SYSTEM_DESIGN.md     # Deep dive: architecture, tradeoffs, edge cases
-│   └── screenshots/         # Real run logs and API responses
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── .env.example
-
 Quick Start
 
 Prerequisites
